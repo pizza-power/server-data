@@ -1,52 +1,48 @@
 #!/usr/bin/python3
 
-import os
 import smtplib
-import paramiko
-
-def validate_key(key_path):
-    """ Validate a key
-
-        :param key_path: path to a key to use for authentication
-        :type key_path: str
-
-        :return: key object used for authentication
-        :rtype: paramiko.RSAKey
-    """
-
-    key_path = os.path.expanduser(key_path)
-
-    if not os.path.isfile(key_path):
-        return False
-
-    return paramiko.RSAKey.from_private_key_file(key_path)
+from subprocess import PIPE, run
+import configparser
 
 
-# TODO try/except load from user input or popup somehow?
-key = validate_key('/home/user/.ssh/id_rsa')
-client = paramiko.SSHClient()
-# TODO don't use this, doesn't protect from Mitm attackes
-client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+def send(data_to_send: str):
+    try:
+        try:
+            creds = configparser.ConfigParser()
+            creds.read("creds.ini")
+            username = creds.get("creds", "username")
+            password = creds.get("creds", "password")
+        except configparser.Error:
+            # TODO write to log that no config found, abort
+            print("error opening creds")
 
-try:
-    print("Connecting")
-    client.connect(hostname="desktop", username="user", password="",
-                   pkey=client.load_host_keys('/home/user/.ssh/id_rsa.pub'))
-    # TODO success function
-    print("Success")
+        to = "pizzapwr@gmail.com"
+        subject = "Test Email"
+        body = data_to_send
 
-except ConnectionError:
-    # TODO using negative print statement
-    print("Connection Error")
+        final_message = 'Subject: {}\n\n{}'.format(subject, body)
+        server = smtplib.SMTP('smtp.gmail.com', 587)
+        server.starttls()
+        server.login(username, password)
+        server.sendmail(username, to, final_message)
+        print("success")
 
-# TODO run script
-# TODO format script
-# TODO write to file
-# TODO email script
+    except:
+        # TODO write to log files instead
+        print("Error sending email")
+
+
+def out(command_to_execute: str):
+    result = run(command_to_execute, stdout=PIPE, stderr=PIPE,
+                 universal_newlines=True, shell=True)
+    return result.stdout
+
+
+data = ""
 
 commands = ["uptime", "users", "df -h", "cat /proc/mdstat", "apcaccess"]
-for command in commands:
-    stdin, stdout, stderr = client.exec_command(command)
-    print(stdout.read())
 
-client.close()g
+for command in commands:
+    data += "\n" + out(command)
+
+send(data)
