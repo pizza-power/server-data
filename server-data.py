@@ -3,7 +3,9 @@
 import smtplib
 from subprocess import PIPE, run
 import configparser
+from datetime import date
 
+logfile = open("log.txt", "a")
 
 def send(data_to_send: str):
     try:
@@ -14,7 +16,8 @@ def send(data_to_send: str):
             password = creds.get("creds", "password")
         except configparser.Error:
             # TODO write to log that no config found, abort
-            print("error opening creds")
+            logfile.write(str(date.today()) + " creds not found\n")
+            logfile.close()
 
         to = "pizzapwr@gmail.com"
         subject = "Test Email"
@@ -25,11 +28,11 @@ def send(data_to_send: str):
         server.starttls()
         server.login(username, password)
         server.sendmail(username, to, final_message)
-        print("success")
-
+        logfile.write(str(date.today()) + " success\n")
+        logfile.close()
     except:
-        # TODO write to log files instead
-        print("Error sending email")
+        logfile.write(str(date.today()) + " failure\n")
+        logfile.close()
 
 
 def out(command_to_execute: str):
