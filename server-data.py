@@ -5,6 +5,7 @@ from subprocess import PIPE, run
 import configparser
 from datetime import date
 
+DATE =  str(date.today())
 logfile = open("log.txt", "a")
 
 def send(data_to_send: str):
@@ -16,11 +17,11 @@ def send(data_to_send: str):
             password = creds.get("creds", "password")
         except configparser.Error:
             # TODO write to log that no config found, abort
-            logfile.write(str(date.today()) + " creds not found\n")
+            logfile.write(DATE + " creds not found\n")
             logfile.close()
 
         to = "pizzapwr@gmail.com"
-        subject = "Test Email"
+        subject = "Server Info " + DATE
         body = data_to_send
 
         final_message = 'Subject: {}\n\n{}'.format(subject, body)
