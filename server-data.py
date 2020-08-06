@@ -48,7 +48,7 @@ def out(command_to_execute: str) -> str:
 
 # build list of commands to email, add commands to data[] as needed
 data = ""
-commands = ["uptime", "users", "last -10", "df -h", "cat /proc/mdstat",
+commands = ["uptime", "users", "last -10", "df | egrep -v /dev/loop", "cat /proc/mdstat",
             "apcaccess"]
 for command in commands:
     data += "\n" + out(command)
