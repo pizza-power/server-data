@@ -6,11 +6,11 @@ This is a simple script to get some stats on my home server, and then email them
 
 Create a config.ini file in the same directory as the script with the following contents
 
-[creds]
-username = putusernamehere
-password = putpasswordhere
+[creds]<br>
+username = *putusernamehere*<br>
+password = *putpasswordhere*<br>
 
-[recipient]
-recipient = putemailrecipienthere
+[recipient]<br>
+recipient = *putemailrecipienthere*<br>
 
 After that, set up a cron job to run the script at whatever interval you'd like. 
