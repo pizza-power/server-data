@@ -6,7 +6,7 @@ import configparser
 from datetime import date
 
 DATE = str(date.today())
-LOGFILE = open("config.txt", "a")
+LOGFILE = open("config.ini", "a")
 
 
 def send(data_to_send: str):
